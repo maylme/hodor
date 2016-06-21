@@ -1,0 +1,159 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <title>Hodor your phrase!</title>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    </head>
+    <body>
+        <div id="part"> 
+            <span>Make Hodor say: </span><br><input id='phrase'></input><br>
+            <div style='background-color : #EEE; display: none' id='result'></div>
+            <button id='button_hodor'>HODOR !</button>
+        <div>
+
+        <audio controls id="audio">
+            <source id="ogg" src="" type="audio/ogg">
+            <source id="mp3" src="" type="audio/mpeg">
+            Your browser does not support the audio tag.
+        </audio> 
+        
+        <div id="hodor_img">
+            <img id="hodor" src="hodor.png">
+            <img id="mouth" src="mouth.png">
+        </div>
+        
+
+        <style>
+            #part{
+                width: 20vw;
+                margin: 5vw;
+                background-color: #eee;
+                color:black;
+                text-align: center;
+                border-radius: 30px;
+                padding: 30px
+            }
+            
+            #audio{
+                visibility: hidden;
+            }
+            #hodor_img{
+                position: absolute;
+                bottom: 0;
+                right: 0;
+            }
+            #hodor{
+                width: 80vw;
+            }
+            #mouth{
+                position: absolute;
+                top: -30px;
+                left: 0;
+                width: 80vw;
+
+            }
+            html{
+                background-image: url("./wall.png");
+                height: 100vh;
+            }
+        </style>
+        <script>
+            jQuery("#button_hodor").click(function(){
+                var phrase = "";
+                var nb_hodor = 0;
+                for(var i = 0 ; i<jQuery("#phrase").val().split(" ").length;i++){
+                    phrase += "HODOR ";
+                    nb_hodor++;
+                }
+                phrase +="!";
+                //jQuery("#result").html(phrase);
+                say_hodor(nb_hodor);
+            });
+
+            function say_hodor(nb_hodor){
+                    if (nb_hodor >= 0){
+                    console.log(nb_hodor);
+                    var deferred = $.Deferred();
+
+                    var sound = sound_hodor();
+                    document.getElementById("mp3").src = "./hodor_audio/"+sound.mp3;
+                    document.getElementById("ogg").src = "./hodor_audio/"+sound.ogg;
+                    var player = document.getElementById("audio");
+                    player.load();
+
+                    console.log(player);
+                    player.onloadeddata = function(){
+                        var time_sound = player.duration*1000;
+                        console.log(time_sound);
+
+                        player.play();
+                        move_lips(time_sound, deferred);
+                    }
+                    
+
+                    $.when(deferred).done(function(){
+                        //wait_random 50-800;
+                        
+                        var wait = Math.floor(Math.random() * 300);
+                        setTimeout(function() {
+                            say_hodor(--nb_hodor);
+                        }, wait);
+                    })
+                }
+            }
+
+            function sound_hodor(){
+                var hodor_sound = [
+                    {
+                        mp3: "hbo-hodor-agreed.mp3",
+                        ogg: "hbo-hodor-agreed.ogg",
+                    },
+                    {
+                        mp3: "hbo-hodor-greeting.mp3",
+                        ogg: "hbo-hodor-greeting.ogg",
+                    },
+                    {
+                        mp3: "hbo-hodor-hah!.mp3",
+                        ogg: "hbo-hodor-hah!.ogg",
+                    },
+                    {
+                        mp3: "hbo-hodor-questioning.mp3",
+                        ogg: "hbo-hodor-questioning.ogg",
+                    },
+                    {
+                        mp3: "hbo-hodor-sure.mp3",
+                        ogg: "hbo-hodor-sure.ogg",
+                    },
+                    {
+                        mp3: "hbo-hodor-yeah_right.mp3",
+                        ogg: "hbo-hodor-yeah_right.ogg",
+                    }
+                ]
+                var total_sound = hodor_sound.length;
+                var sound =  Math.floor(Math.random() * total_sound); //between 0 and nb of sound 
+                return hodor_sound[sound];
+
+
+            }
+            function move_lips(time_sound, deferred){
+                var time = time_sound/2;
+                $("#mouth").animate({
+                    top: "+=20",
+                }, time, function() {
+                    $("#mouth").animate({
+                        top: "-30px",
+                    }, time, function() {
+                        deferred.resolve();
+                    });
+                });
+            }
+        </script>
+    </body>
+
+
+
+
+
+
+</html>
